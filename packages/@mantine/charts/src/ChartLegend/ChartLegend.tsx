@@ -34,6 +34,12 @@ export interface ChartLegendProps
 
   /** Data used for labels, only applicable for area charts: AreaChart, LineChart, BarChart */
   series?: ChartSeries[];
+
+  /** Determines whether color swatch should be shown next to the label, `true` by default */
+  showColor?: boolean;
+
+  /** Determines whether the legend should be centered, `false` by default */
+  centered?: boolean;
 }
 
 export type ChartLegendFactory = Factory<{
@@ -58,6 +64,8 @@ export const ChartLegend = factory<ChartLegendFactory>((_props, ref) => {
     legendPosition,
     mod,
     series,
+    showColor,
+    centered,
     ...others
   } = props;
 
@@ -85,6 +93,7 @@ export const ChartLegend = factory<ChartLegendFactory>((_props, ref) => {
       {...getStyles('legendItem')}
       onMouseEnter={() => onHighlight(item.dataKey)}
       onMouseLeave={() => onHighlight(null)}
+      data-without-color={showColor === false || undefined}
     >
       <ColorSwatch
         color={item.color}
@@ -97,7 +106,12 @@ export const ChartLegend = factory<ChartLegendFactory>((_props, ref) => {
   ));
 
   return (
-    <Box ref={ref} mod={[{ position: legendPosition }, mod]} {...getStyles('legend')} {...others}>
+    <Box
+      ref={ref}
+      mod={[{ position: legendPosition, centered }, mod]}
+      {...getStyles('legend')}
+      {...others}
+    >
       {items}
     </Box>
   );
