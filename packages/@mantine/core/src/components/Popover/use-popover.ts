@@ -93,7 +93,7 @@ function getPopoverMiddlewares(
           const styles = floating.refs.floating.current?.style ?? {};
 
           if (middlewaresOptions.size) {
-            //if custom apply function is given use that else set defaults
+            //If custom apply function is given use that else set defaults
             if (typeof middlewaresOptions.size === 'object' && !!middlewaresOptions.size.apply) {
               middlewaresOptions.size.apply({ rects, availableWidth, availableHeight, ...rest });
             } else {
@@ -118,7 +118,7 @@ function getPopoverMiddlewares(
 }
 
 export function usePopover(options: UsePopoverOptions) {
-  const [_opened, setOpened] = useUncontrolled({
+  const [_opened, setOpened, isControlled] = useUncontrolled({
     value: options.opened,
     defaultValue: options.defaultOpened,
     finalValue: false,
@@ -149,7 +149,7 @@ export function usePopover(options: UsePopoverOptions) {
   });
 
   useFloatingAutoUpdate({
-    opened: options.opened,
+    opened: _opened,
     position: options.position,
     positionDependencies: options.positionDependencies || [],
     floating,
@@ -160,12 +160,14 @@ export function usePopover(options: UsePopoverOptions) {
   }, [floating.placement]);
 
   useDidUpdate(() => {
-    if (!options.opened) {
-      options.onClose?.();
-    } else {
-      options.onOpen?.();
+    if (!isControlled) {
+      if (!options.opened) {
+        options.onClose?.();
+      } else {
+        options.onOpen?.();
+      }
     }
-  }, [options.opened]);
+  }, [options.opened, isControlled]);
 
   return {
     floating,
